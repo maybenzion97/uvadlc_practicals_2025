@@ -31,7 +31,7 @@ class MLP(object):
     Once initialized an MLP object can perform forward and backward.
     """
 
-    def __init__(self, n_inputs, n_hidden, n_classes):
+    def __init__(self, n_inputs, n_hidden, n_classes, alpha=0.5):
         """
         Initializes MLP object.
 
@@ -44,6 +44,7 @@ class MLP(object):
           n_classes: number of classes of the classification problem.
                      This number is required in order to specify the
                      output dimensions of the MLP
+          alpha: ELU activation parameter
 
         TODO:
         Implement initialization of the network.
@@ -52,7 +53,28 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+
+        self.modules = []  # store all modules in order
+        current_input_size = n_inputs
+
+        # add hidden layers with ELU activations (only if n_hidden is not empty)
+        for idx, hidden_size in enumerate(n_hidden):
+            # add linear layer
+            is_input_layer = (idx == 0)
+            self.modules.append(LinearModule(current_input_size, hidden_size, input_layer=is_input_layer))
+            # add ELU activation
+            self.modules.append(ELUModule(alpha=alpha))
+            # update input size for next layer
+            current_input_size = hidden_size
+
+        # add final output layer (Linear -> Softmax)
+        is_input_layer = (len(n_hidden) == 0)
+        self.modules.append(LinearModule(current_input_size, n_classes, input_layer=is_input_layer))
+
+        # add softmax for multi-class classification (n_classes > 1)
+        if n_classes > 1:
+            self.modules.append(SoftMaxModule())
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -75,6 +97,11 @@ class MLP(object):
         # PUT YOUR CODE HERE  #
         #######################
 
+        # pass input through all modules sequentially
+        out = x
+        for module in self.modules:
+            out = module.forward(out)
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -95,7 +122,11 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+
+        # propagate gradients backward through all modules in reverse order - start with dout and pass it through each module's backward
+        for module in reversed(self.modules):
+            dout = module.backward(dout)
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -112,7 +143,11 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+
+        # clear cache from all modules
+        for module in self.modules:
+            module.clear_cache()
+
         #######################
         # END OF YOUR CODE    #
         #######################

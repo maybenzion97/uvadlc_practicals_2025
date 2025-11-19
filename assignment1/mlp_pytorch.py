@@ -59,7 +59,51 @@ class MLP(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+
+        super(MLP, self).__init__()
+
+        # build the network using nn.Sequential with OrderedDict for named layers
+        layers = OrderedDict()
+        current_input_size = n_inputs
+
+        # add hidden layers with ELU activations (and optional batch norm)
+        for idx, hidden_size in enumerate(n_hidden):
+            # add linear layer
+            layer_name = f'linear_{idx}'
+            linear = nn.Linear(current_input_size, hidden_size)
+
+            if idx == 0:
+                nn.init.kaiming_normal_(linear.weight, mode='fan_in', nonlinearity='linear')
+            else:
+                nn.init.kaiming_normal_(linear.weight, mode='fan_in', nonlinearity='leaky_relu')
+            nn.init.zeros_(linear.bias)
+
+            layers[layer_name] = linear
+
+            # add batch normalization if requested
+            if use_batch_norm:
+                layers[f'batchnorm_{idx}'] = nn.BatchNorm1d(hidden_size)
+
+            # add ELU activation
+            layers[f'elu_{idx}'] = nn.ELU()
+
+            # update input size for next layer
+            current_input_size = hidden_size
+
+        # add final output layer (Linear only, no activation)
+        output_linear = nn.Linear(current_input_size, n_classes)
+
+        if len(n_hidden) == 0:  # if no hidden layers, this is the first layer after input
+            nn.init.kaiming_normal_(output_linear.weight, mode='fan_in', nonlinearity='linear')
+        else:
+            nn.init.kaiming_normal_(output_linear.weight, mode='fan_in', nonlinearity='leaky_relu')
+        nn.init.zeros_(output_linear.bias)
+
+        layers['output'] = output_linear
+
+        # create sequential model
+        self.model = nn.Sequential(layers)
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -81,6 +125,8 @@ class MLP(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
+
+        out = self.model(x)
 
         #######################
         # END OF YOUR CODE    #

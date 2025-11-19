@@ -1,0 +1,68 @@
+[project]
+name = "DL1"
+dynamic = ["version"]
+authors = [
+    {name = "May", email = "may.daniel.ben.zion@intel.com"},
+]
+description = "DL1"
+requires-python = ">=3.12.6,<3.13"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "numpy==1.26.4",
+    "opencv-contrib-python==4.10.0.84",
+    "matplotlib>=3.9.2",
+    "scikit-learn==1.5.1",
+    "scipy==1.14.1",
+    "imageio==2.35.1",
+    "pandas==2.2.2",
+    "pytz==2024.1",
+    "tzdata==2024.1",
+    # PyTorch ecosystem (compatible with macOS ARM64)
+    "torch>=2.2.0",
+    "torchvision>=0.17.0",
+    "torchaudio>=2.2.0",
+    # Deep learning tools
+    "pytorch-lightning>=2.0.0",
+    "tensorboard==2.17.1",
+    "torchinfo==1.8.0",
+    # Utilities
+    "tqdm>=4.66.5",
+    "tabulate>=0.9.0",
+    "pillow>=10.4.0",
+    # Jupyter environment
+    "notebook>=7.2.2",
+    "jupyterlab>=4.2.5",
+    "jupyter==1.1.0",
+    "ipywidgets>=8.1.2",
+    # Visualization
+    "seaborn>=0.13.2",
+]
+
+[tool.uv]
+index-strategy = "unsafe-best-match"
+extra-index-url = [
+    "https://af01p-fm.devtools.intel.com/artifactory/api/pypi/aisg-platform-repos/simple",
+    "https://af01p-il.devtools.intel.com/artifactory/api/pypi/aisg-platform-repos/simple",
+    "https://af01p-fm.devtools.intel.com/artifactory/api/pypi/aa-pypi-fm-local/simple",
+    "https://ubit-artifactory-il.intel.com/artifactory/api/pypi/aa-pypi-fm-local-il-local/simple",
+]
+allow-insecure-host = ["aa-artifactory.intel.com"]
+package = false
+
+[tool.uv.pip]
+emit-index-url = false
+
+[tool.setuptools]
+packages = []  # No Python packages to install
+
+# Alternative if you have actual Python modules
+# packages = ["cv1"]  # Only include your actual Python code
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml"]  # Include YAML files
+
+[tool.setuptools.exclude-package-data]
+

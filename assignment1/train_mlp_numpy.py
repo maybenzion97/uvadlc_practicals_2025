@@ -29,6 +29,8 @@ from copy import deepcopy
 from mlp_numpy import MLP
 from modules import CrossEntropyModule
 import cifar10_utils
+from plot_utils import (plot_training_curves, plot_loss_curve_only,
+                         print_summary_statistics, save_metrics_to_file)
 
 import torch
 
@@ -53,6 +55,15 @@ def accuracy(predictions, targets):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+
+    # get predicted class labels (argmax over class dimension)
+    predicted_labels = np.argmax(predictions, axis=1)
+
+    # compare predictions with ground truth targets
+    correct_predictions = (predicted_labels == targets)
+
+    # compute accuracy as the mean of correct predictions
+    accuracy = np.mean(correct_predictions)
 
     #######################
     # END OF YOUR CODE    #
@@ -81,6 +92,23 @@ def evaluate_model(model, data_loader):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+
+
+    avg_accuracy = 0.0
+
+    # iterate over all batches in the data loader
+    for batch_inputs, batch_targets in data_loader:
+        # flatten the input
+        batch_inputs = batch_inputs.reshape(batch_inputs.shape[0], -1)  # (batch_size, C, H, W) -> (batch_size, C*H*W)
+
+        # forward pass through the model
+        predictions = model.forward(batch_inputs)
+
+        # compute batch accuracy
+        avg_accuracy += accuracy(predictions, batch_targets)
+
+    # compute average accuracy across entire dataset
+    avg_accuracy = avg_accuracy / len(data_loader)
 
     #######################
     # END OF YOUR CODE    #
@@ -135,19 +163,96 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir):
     #######################
 
     # TODO: Initialize model and loss module
-    model = ...
-    loss_module = ...
+    n_inputs = np.prod(cifar10['train'].dataset[0][0].shape)
+    n_classes = 10  # CIFAR-10 has 10 classes
+    model = MLP(n_inputs=n_inputs, n_hidden=hidden_dims, n_classes=n_classes)
+    loss_module = CrossEntropyModule()
+
     # TODO: Training loop including validation
-    val_accuracies = ...
+    val_accuracies = []
+
     # TODO: Test best model
-    test_accuracy = ...
+    best_val_accuracy = 0.0
+    best_model = None
+
     # TODO: Add any information you might want to save for plotting
-    logging_dict = ...
+    logging_dict = {
+      'batch_loss': [],
+      'batch_train_accuracy': [],
+      'train_accuracy_per_epoch': [],
+      'hyperparameters': {
+          'hidden_dims': hidden_dims,
+          'lr': lr,
+          'batch_size': batch_size,
+          'epochs': epochs,
+          'seed': seed,
+          'data_dir': data_dir
+      }
+    }
+
+    # training loop
+    for epoch in range(epochs):
+        for batch_inputs, batch_targets in cifar10_loader['train']:
+            # flatten the images
+            batch_inputs = batch_inputs.reshape(batch_inputs.shape[0], -1)
+
+            # forward pass
+            predictions = model.forward(batch_inputs)
+
+            # compute loss
+            loss = loss_module.forward(predictions, batch_targets)
+
+            # backward pass
+            dout = loss_module.backward(predictions, batch_targets)
+            model.backward(dout)
+
+            # logging metrics per batch
+            logging_dict['batch_loss'].append(loss)
+            logging_dict['batch_train_accuracy'].append(accuracy(predictions, batch_targets))
+
+            # SGD parameter update
+            for module in model.modules:
+                if hasattr(module, 'params'):  # only LinearModule has parameters
+                    # update weights: W = W - lr * dW
+                    module.params['weight'] -= lr * module.grads['weight']
+                    # update biases: b = b - lr * db
+                    module.params['bias'] -= lr * module.grads['bias']
+
+            # clear cache
+            model.clear_cache()
+
+        # compute metrics at the end of the epoch
+        avg_epoch_train_accuracy = evaluate_model(model, cifar10_loader['train'])
+        avg_epoch_val_accuracy = evaluate_model(model, cifar10_loader['validation'])
+        logging_dict['train_accuracy_per_epoch'].append(avg_epoch_train_accuracy)
+        val_accuracies.append(avg_epoch_val_accuracy)
+
+        # update best model phase
+        if avg_epoch_val_accuracy > best_val_accuracy:
+            best_val_accuracy = avg_epoch_val_accuracy
+            best_model = deepcopy(model)
+
+        # print epoch metrics
+        print(f"Epoch: {epoch+1} | Last batch Train Loss: {loss:.4f} | Train Accuracy: {avg_epoch_train_accuracy:.4f} | Val Accuracy: {avg_epoch_val_accuracy:.4f}")
+
+    test_accuracy = evaluate_model(best_model, cifar10_loader['test'])
+
+    # print summary statistics
+    print_summary_statistics(logging_dict, val_accuracies, test_accuracy)
+
+    # create and save plots
+    plot_training_curves(logging_dict, val_accuracies, test_accuracy, framework='numpy')
+    plot_loss_curve_only(logging_dict, framework='numpy')
+
+    # save metrics to file for report
+    save_metrics_to_file(logging_dict, val_accuracies, test_accuracy,
+                        logging_dict['hyperparameters'], framework='numpy')
+
     #######################
     # END OF YOUR CODE    #
     #######################
 
-    return model, val_accuracies, test_accuracy, logging_dict
+    return best_model, val_accuracies, test_accuracy, logging_dict
 
 
 if __name__ == '__main__':
