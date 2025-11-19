@@ -19,6 +19,20 @@ from torch.autograd import Variable
 import argparse
 from utils import gen_box_data, gen_box_data_test
 
+
+def get_device():
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+        print('Using CUDA GPU')
+    elif torch.backends.mps.is_available():
+        device = torch.device('mps')
+        print('Using MPS (Apple Silicon GPU)')
+    else:
+        device = torch.device('cpu')
+        print('Using CPU')
+    return device
+
+
 class Net(nn.Module):
     '''
     Create network with 4 Conv layers
@@ -189,7 +203,7 @@ if __name__ == '__main__':
         torch.manual_seed(m)
         net = Net(conv_type=conv_type, net_type=net_type)
         if use_gpu:
-            net = net.cuda()
+            net = net.to(device)
         print(net)
         param_size = 0
         for param in net.parameters():
@@ -232,8 +246,8 @@ if __name__ == '__main__':
                     label_class = label_class.type(torch.LongTensor)
 
                     if use_gpu:
-                        images = Variable(images.cuda())
-                        label_class = Variable(label_class.cuda())
+                        images = Variable(images.to(device))
+                        label_class = Variable(label_class.to(device))
                     else:
                         images, label_class = Variable(images), Variable(label_class)
 
@@ -269,8 +283,8 @@ if __name__ == '__main__':
                     label_class = label_class.type(torch.LongTensor)
 
                     if use_gpu:
-                        images = Variable(images.cuda())
-                        label_class = Variable(label_class.cuda())
+                        images = Variable(images.to(device))
+                        label_class = Variable(label_class.to(device))
 
                     outputs_class = net(images)
 
@@ -319,8 +333,8 @@ if __name__ == '__main__':
             label_class = label_class.type(torch.LongTensor)
 
             if use_gpu:
-                images = Variable(images.cuda())
-                label_class = Variable(label_class.cuda())
+                images = Variable(images.to(device))
+                label_class = Variable(label_class.to(device))
 
             outputs_class = net(images)
 
