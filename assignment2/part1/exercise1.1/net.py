@@ -17,6 +17,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 import argparse
+import pandas as pd
 from utils import gen_box_data, gen_box_data_test
 
 
@@ -107,30 +108,17 @@ class Net(nn.Module):
         x = self.fc1(x)
         return x
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--train_size", type=int, default=2000, help="training set size")
-    parser.add_argument("--val_size", type=int, default=1000, help="validation set size")
-    parser.add_argument("--test_size", type=int, default=1000, help="test set size")
-    parser.add_argument("--conv_type", type=str, default='fconv',
-                        help="please choose convolution type from 'valid', 'sconv','fconv','circular', 'reflect', 'replicate'")
-    parser.add_argument("--net_type", type=str, default='Net1', help="please choose network type from 'Net1' and 'Net2'")
-    parser.add_argument("--image_size", type=int, default=32, help="spatial size of sample image")
-    parser.add_argument("--offset1", type=int, default=7, help="offset for class-1")
-    parser.add_argument("--offset2", type=int, default=23, help="offset for class-2")
-    parser.add_argument("--fluctuation", type=int, default=6, 
-                        help="paramater for location fluctuation on the y-axis")
-    parser.add_argument("--n_repeat", type=int, default=10,
-                        help="training the network with n different initializations")
-    parser.add_argument("--epochs", type=int, default=50, help="number of epochs")
-    parser.add_argument("--batch_size", type=int, default=200, help="size of each image batch")
 
-    opt = parser.parse_args()
-    print(opt)
+def train_and_evaluate(opt, conv_type, device, use_gpu):
+    """
+    Train and evaluate the network for a specific conv_type.
+    Returns mean and std for validation and test accuracies.
+    """
+    print(f"\n{'='*60}")
+    print(f"Training with conv_type: {conv_type}")
+    print(f"{'='*60}\n")
 
-    use_gpu = torch.cuda.is_available()
-    net_model = 'net_model_wts.pth'
-    conv_type = opt.conv_type
+    net_model = f'net_model_wts_{conv_type}.pth'
     net_type = opt.net_type
     batch_size = opt.batch_size
 
@@ -374,3 +362,66 @@ if __name__ == '__main__':
     print('mean: {:.4f} std: {:.4f} for validation'.format(mean_val, std_val))
     print('Results for test dataset', results_test)
     print('mean: {:.4f} std: {:.4f} for test'.format(mean_test, std_test))
+
+    return {
+        'mean_val': mean_val,
+        'std_val': std_val,
+        'mean_test': mean_test,
+        'std_test': std_test
+    }
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--train_size", type=int, default=2000, help="training set size")
+    parser.add_argument("--val_size", type=int, default=1000, help="validation set size")
+    parser.add_argument("--test_size", type=int, default=1000, help="test set size")
+    parser.add_argument("--conv_type", type=str, default=None,
+                        help="please choose convolution type from 'valid', 'sconv','fconv','circular', 'reflect', 'replicate'. If None, runs all types.")
+    parser.add_argument("--net_type", type=str, default='Net1', help="please choose network type from 'Net1' and 'Net2'")
+    parser.add_argument("--image_size", type=int, default=32, help="spatial size of sample image")
+    parser.add_argument("--offset1", type=int, default=7, help="offset for class-1")
+    parser.add_argument("--offset2", type=int, default=23, help="offset for class-2")
+    parser.add_argument("--fluctuation", type=int, default=6,
+                        help="paramater for location fluctuation on the y-axis")
+    parser.add_argument("--n_repeat", type=int, default=10,
+                        help="training the network with n different initializations")
+    parser.add_argument("--epochs", type=int, default=50, help="number of epochs")
+    parser.add_argument("--batch_size", type=int, default=200, help="size of each image batch")
+    parser.add_argument("--output_csv", type=str, default="results.csv",
+                        help="output CSV file name for results")
+
+    opt = parser.parse_args()
+    print(opt)
+    device = get_device()
+    use_gpu = device.type in ['cuda', 'mps']
+
+    # Define all conv_types to run
+    if opt.conv_type is None:
+        conv_types = ['valid', 'replicate', 'reflect', 'circular', 'sconv', 'fconv']
+    else:
+        conv_types = [opt.conv_type]
+
+    # Store results for all conv_types
+    all_results = []
+
+    for conv_type in conv_types:
+        results = train_and_evaluate(opt, conv_type, device, use_gpu)
+        all_results.append({
+            'conv_type': conv_type,
+            'net_type': opt.net_type,
+            'val_mean': results['mean_val'],
+            'val_std': results['std_val'],
+            'test_mean': results['mean_test'],
+            'test_std': results['std_test']
+        })
+
+    # Save results to CSV
+    df = pd.DataFrame(all_results)
+    df.to_csv(opt.output_csv, index=False)
+    print(f"\n{'='*60}")
+    print(f"Results saved to {opt.output_csv}")
+    print(f"{'='*60}")
+    print("\nSummary of Results:")
+    print(df.to_string(index=False))
+
