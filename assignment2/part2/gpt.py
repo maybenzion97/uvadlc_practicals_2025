@@ -130,11 +130,11 @@ class CausalSelfAttention(nn.Module):
 
         # calculate query, key, values for all heads in batch and move head forward to be the batch dim
         # Split output of attention-head in query, key and value
-        q, k ,v  = ...
+        q, k ,v  = self.c_attn(x).split(self.n_embd, dim=2)
 
-        q = ...
-        k = ...
-        v = ...
+        q = q.reshape(B, T, self.n_head, C // self.n_head).transpose(1, 2)
+        k = k.reshape(B, T, self.n_head, C // self.n_head).transpose(1, 2)
+        v = v.reshape(B, T, self.n_head, C // self.n_head).transpose(1, 2)
 
         if not self.config.abs_emb:
             q, k = self.apply_rotary_emb(q, k, T)
@@ -144,13 +144,18 @@ class CausalSelfAttention(nn.Module):
         # Mask the calculated attention weights with the mask parameter.
 
         if self.use_flash_attn:
-            y = ...
+            y = ...  # TODO
         else:
             # Compute attention scores
-            att = ... 
+            att = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(k.size(-1))
             # Apply causal mask
+            att = torch.where(self.mask[:, :, :T, :T] == 0, float('-inf'), att)
+            # Softmax normalization
+            att = F.softmax(att, dim=-1)
+            # Apply dropout to attention weights
+            att = self.attn_dropout(att)
             # Apply attention to the values
-            y = ... # (B, nh, T, T) x (B, nh, T, hs) -> (B, nh, T, hs)
+            y = torch.matmul(att, v) # (B, nh, T, T) x (B, nh, T, hs) -> (B, nh, T, hs)
         y = y.transpose(1, 2).contiguous().view(B, T, C) # re-assemble all head outputs side by side
 
         # output projection
