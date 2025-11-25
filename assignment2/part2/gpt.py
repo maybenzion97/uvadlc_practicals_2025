@@ -42,6 +42,10 @@ class RMSNorm(nn.Module):
     def forward(self, x):
         # Compute the norm of the input tensor and divide by the norm
         # Scale the normalized tensor by the learned weight parameter
+        variance = torch.mean(x ** 2, dim=-1, keepdim=True)
+        rms = torch.sqrt(variance + self.eps)
+        normalized = x / rms
+        output = normalized * self.weight
         return output
 
 class CausalSelfAttention(nn.Module):
