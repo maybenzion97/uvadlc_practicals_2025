@@ -112,21 +112,29 @@ class CausalSelfAttention(nn.Module):
         Returns:
             Tuple[torch.Tensor, torch.Tensor]: Tuple containing the modified query and key tensors.
         """
+            device = xq.device
         # Generate RoPE embeddings dynamically based on T
-        seq_pos = ...  # Shape: (T)
-        freqs = ...    # Shape: (T, dim // 2)
-        pos_emb = ...  # Shape: (1, 1, T, dim)
-        
+        seq_pos = torch.arange(T, dtype=torch.float32, device=device)  # Shape: (T)
+        freqs = torch.outer(seq_pos, self.inv_freq.to(device))    # Shape: (T, dim // 2)
+        pos_emb = freqs.repeat_interleave(2, dim=-1)[None, None, :, :]  # Shape: (1, 1, T, dim)
+
         # Split pos into sin and cos components, repeating each to match xq and xk dimensions
-        pos_sin = ...
-        pos_cos = ...
+        pos_sin = pos_emb.sin()
+        pos_cos = pos_emb.cos()
         
         # Apply RoPE transformation: pair and rotate dimensions
         # Rotate query and key tensors
-        xq_rot = ...
-        xk_rot = ...
-        raise NotImplementedError
-        
+        xq_rotated = torch.empty_like(xq)
+        xq_rotated[..., ::2] = -xq[..., 1::2]  # Even indices get negated odd values
+        xq_rotated[..., 1::2] = xq[..., ::2]  # Odd indices get even values
+
+        xk_rotated = torch.empty_like(xk)
+        xk_rotated[..., ::2] = -xk[..., 1::2]  # Even indices get negated odd values
+        xk_rotated[..., 1::2] = xk[..., ::2]  # Odd indices get even values
+
+        xq_rot = xq * pos_cos + xq_rotated * pos_sin
+        xk_rot = xk * pos_cos + xk_rotated * pos_sin
+
         return xq_rot, xk_rot
         
     def forward(self, x):
