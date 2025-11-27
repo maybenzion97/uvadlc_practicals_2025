@@ -488,24 +488,46 @@ class GPT(nn.Module):
             idx_cond = idx if idx.size(1) <= self.block_size else idx[:, -self.block_size:]
 
             # forward the model to get the logits for the index in the sequence
+            logits = self.forward(idx_cond)
             # pluck the logits at the final step and scale by desired temperature
+            logits = logits[:, -1, :] / temperature
 
             if not do_sample:
                 # take the most likely token
-                idx_next = ...
-            
+                idx_next = torch.argmax(logits, dim=-1, keepdim=True)
+
             else:
                 # apply softmax to convert logits to (normalized) probabilities
 
                 # optionally only consider top-k logits for sampling. 
                 if top_k is not None:
-                    pass
+                    # Keep only top k logits, set rest to -inf
+                    top_k_values, top_k_indices = torch.topk(logits, min(top_k, logits.size(-1)), dim=-1)
+                    logits.fill_(float('-inf'))
+                    logits.scatter_(-1, top_k_indices, top_k_values)
 
                 # optionally apply top-p sampling
                 if top_p is not None:
-                    pass
-            
+                    # Sort logits in descending order and convert to probabilities
+                    sorted_logits, sorted_indices = torch.sort(logits, descending=True, dim=-1)
+                    sorted_probs = F.softmax(sorted_logits, dim=-1)
+                    cumulative_probs = sorted_probs.cumsum(dim=-1)
+
+                    # Remove tokens with cumulative probability above the threshold
+                    sorted_indices_to_remove = cumulative_probs > top_p
+                    sorted_indices_to_remove[:, 0] = False  # Always keep the top token
+
+                    # Map the removal mask back to original vocabulary order
+                    indices_to_remove = sorted_indices_to_remove.scatter(
+                        -1, sorted_indices, sorted_indices_to_remove
+                    )
+                    logits[indices_to_remove] = float('-inf')
+
+                # Convert logits to probabilities and sample
+                probs = F.softmax(logits, dim=-1)
+                idx_next = torch.multinomial(probs, num_samples=1)
+
             # append sampled index to the running sequence and continue
-            idx = ...
+            idx = torch.cat([idx, idx_next], dim=1)
 
         return idx
