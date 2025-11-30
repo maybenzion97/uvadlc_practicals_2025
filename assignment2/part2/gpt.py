@@ -95,8 +95,9 @@ class CausalSelfAttention(nn.Module):
 
         # Frequency for RoPE
         dim = config.n_embd // config.n_head
-        self.inv_freq = 1.0 / (10000 ** (torch.arange(0, dim, 2).float() / dim))
-
+        # self.inv_freq = 1.0 / (10000 ** (torch.arange(0, dim, 2).float() / dim))
+        # Precompute the inverse frequency for RoPE. Better to register buffer to reduce BW usage during training and inference
+        self.register_buffer("inv_freq", 1.0 / (10000 ** (torch.arange(0, dim, 2).float() / dim)))
         self.config  = config 
         self.debug = debug
 
@@ -156,6 +157,8 @@ class CausalSelfAttention(nn.Module):
         # Mask the calculated attention weights with the mask parameter.
 
         if self.use_flash_attn:
+            # remove dropout during inference
+            dropout_p = self.attn_dropout.p if self.training else 0.0
             y = F.scaled_dot_product_attention(q, k, v, is_causal=True, dropout_p=self.attn_dropout.p)
         else:
             # Compute attention scores
@@ -216,7 +219,7 @@ class TransformerDecoderBlock(nn.Module):
         residual = x
         out = self.layer_norm_1(x)
         out = self.self_attention(out)
-        out = self.resid_dropout(out) + residual
+        out = out + residual
 
         # Second residual connection (MLP)
         residual = out

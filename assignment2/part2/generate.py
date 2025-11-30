@@ -77,6 +77,8 @@ def generate(
         if verbose:
             print('-'*80)
             print(out)
+    # returning decoded_outputs to match docstring behavior
+    return decoded_outputs
 
 
 
