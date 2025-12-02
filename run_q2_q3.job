@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# SLURM job script to run:
+#   - Q2.7  (LLM training on Grimm corpus, 5 epochs with optimizations)
+#   - Q2.8b (generation experiments via evaluate_generation.py)
+#   - Q3.4d (Graph CNN and GAT training with TensorBoard logs)
+#
+# It relies on the Conda environment specified in:
+#   assignment2/part3/dl2025_gpu.yml
+# with environment name: dl2025
+#
+# Submit from your home or repo root, e.g.:
+#   cd $HOME/uvadlc_practicals_2025
+#   sbatch assignment2/run_q2_q3.job
+
+#SBATCH --partition=gpu_a100
+#SBATCH --gpus=1
+#SBATCH --job-name=DL1_A2_Q2_Q3
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=9
+#SBATCH --time=04:00:00
+#SBATCH --output=slurm_output_q2_q3_%A.out
+
+module purge
+module load 2025
+module load Anaconda3/2025.06-1
+
+cd "$HOME/uvadlc_practicals_2025" || exit 1
+
+# Activate the dl2025 environment (created from dl2025_gpu.yml)
+source activate dl2025
+
+echo "Python version in env:"
+python --version
+
+echo "==============================================================="
+echo "Running run_q2_q3.sh (Q2.7, Q2.8b, Q3.4d)"
+echo "==============================================================="
+
+bash assignment2/run_q2_q3.sh slurm
+
