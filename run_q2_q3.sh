@@ -18,28 +18,27 @@ set -u  # fail on undefined variables; do NOT use -e so later parts still run
 # Decide whether to wrap python calls in srun (for SLURM) or not (local)
 MODE="${1:-local}"   # default: local
 if [[ "${MODE}" == "slurm" ]]; then
-  PYTHON_RUNNER="srun $HOME/miniconda/envs/dl2025/bin/python"
+  PYTHON_RUNNER="srun python"
 else
-  PYTHON_RUNNER="$HOME/miniconda/envs/dl2025/bin/python"
+  PYTHON_RUNNER="python"
 fi
 
 # Always work relative to this script's directory (assignment2/)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}" || exit 1
-# already trained the model. available in logs/gpt-mini/version_1/checkpoints
-# echo "====================================================================="
-# echo "Q2.7: Train LLM on 'Fairy Tales by Brothers Grimm' for 5 epochs"
-# echo "====================================================================="
-# (
-#   cd part2 || exit 0
+echo "====================================================================="
+echo "Q2.7: Train LLM on 'Fairy Tales by Brothers Grimm' for 5 epochs"
+echo "====================================================================="
+(
+  cd part2 || exit 0
 
-#   # Command recommended in the assignment README:
-#   # uses cfg.py defaults (Grimm corpus), enables FlashAttention and compile.
-#   ${PYTHON_RUNNER} train.py --use_flash_attn --compile --num_epochs 5 --num_workers 8
-# )
-# if [ $? -ne 0 ]; then
-#   echo "Q2.7 training FAILED (continuing to Q2.8b)..."
-# fi
+  # Command recommended in the assignment README:
+  # uses cfg.py defaults (Grimm corpus), enables FlashAttention and compile.
+  ${PYTHON_RUNNER} train.py --use_flash_attn --compile --num_epochs 5 --num_workers 8
+)
+if [ $? -ne 0 ]; then
+  echo "Q2.7 training FAILED (continuing to Q2.8b)..."
+fi
 
 echo
 echo "====================================================================="
