@@ -44,6 +44,13 @@ def load_checkpoint(checkpoint_dir: str) -> Dict[str, Any]:
     print(f"Loading checkpoint: {ckpt_path}")
     # We keep weights_only=False for maximum compatibility with Lightning checkpoints.
     state = torch.load(ckpt_path)
+    if state['hyper_parameters'].get('compile', False) and 'state_dict' in state:
+        cleaned_state_dict = {}
+        for key, value in state['state_dict'].items():
+            new_key = key.replace('model._orig_mod.', 'model.')
+            cleaned_state_dict[new_key] = value
+        state['state_dict'] = cleaned_state_dict
+
     return state
 
 
