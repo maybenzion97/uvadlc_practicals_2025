@@ -159,7 +159,7 @@ class CausalSelfAttention(nn.Module):
         if self.use_flash_attn:
             # remove dropout during inference
             dropout_p = self.attn_dropout.p if self.training else 0.0
-            y = F.scaled_dot_product_attention(q, k, v, is_causal=True, dropout_p=self.attn_dropout.p)
+            y = F.scaled_dot_product_attention(q, k, v, is_causal=True, dropout_p=dropout_p)
         else:
             # Compute attention scores
             att = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(k.size(-1))
@@ -174,7 +174,7 @@ class CausalSelfAttention(nn.Module):
         y = y.transpose(1, 2).contiguous().view(B, T, C) # re-assemble all head outputs side by side
 
         # output projection
-        y = self.resid_dropout(self.c_proj(y))
+        y = self.c_proj(y)
         return y if not self.debug else {"att_probs": att, "q": q, "k": k, "v": v}
 
 
@@ -219,7 +219,7 @@ class TransformerDecoderBlock(nn.Module):
         residual = x
         out = self.layer_norm_1(x)
         out = self.self_attention(out)
-        out = out + residual
+        out = self.resid_dropout(out) + residual
 
         # Second residual connection (MLP)
         residual = out

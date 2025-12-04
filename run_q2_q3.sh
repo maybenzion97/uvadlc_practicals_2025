@@ -25,20 +25,38 @@ fi
 
 # Always work relative to this script's directory (assignment2/)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# cd "${SCRIPT_DIR}" || exit 1
-# echo "====================================================================="
-# echo "Q2.7: Train LLM on 'Fairy Tales by Brothers Grimm' for 5 epochs"
-# echo "====================================================================="
-# (
-#   cd part2 || exit 0
+cd "${SCRIPT_DIR}" || exit 1
+echo "====================================================================="
+echo "Q2.7: Train LLM on 'Fairy Tales by Brothers Grimm' for 1 epochs without FlashAttention and compile"
+echo "====================================================================="
+(
+  cd part2 || exit 0
 
-#   # Command recommended in the assignment README:
-#   # uses cfg.py defaults (Grimm corpus), enables FlashAttention and compile.
-#   ${PYTHON_RUNNER} train.py --use_flash_attn --compile --num_epochs 5 --num_workers 8
-# )
-# if [ $? -ne 0 ]; then
-#   echo "Q2.7 training FAILED (continuing to Q2.8b)..."
-# fi
+  # Command recommended in the assignment README:
+  # uses cfg.py defaults (Grimm corpus), enables FlashAttention and compile.
+  ${PYTHON_RUNNER} train.py --num_epochs 1 --num_workers 8
+)
+if [ $? -ne 0 ]; then
+  echo "Q2.7 training FAILED (continuing to Q2.7 with FlashAttention and compile) without FlashAttention and compile..."
+fi
+
+
+
+
+cd "${SCRIPT_DIR}" || exit 1
+echo "====================================================================="
+echo "Q2.7: Train LLM on 'Fairy Tales by Brothers Grimm' for 5 epochs"
+echo "====================================================================="
+(
+  cd part2 || exit 0
+
+  # Command recommended in the assignment README:
+  # uses cfg.py defaults (Grimm corpus), enables FlashAttention and compile.
+  ${PYTHON_RUNNER} train.py --use_flash_attn --compile --num_epochs 5 --num_workers 8
+)
+if [ $? -ne 0 ]; then
+  echo "Q2.7 training FAILED (continuing to Q2.8b)..."
+fi
 
 echo
 echo "====================================================================="
@@ -71,26 +89,27 @@ if [ $? -ne 0 ]; then
   echo "Q2.8b evaluation FAILED (continuing to Q3.4d)..."
 fi
 
-# echo
-# echo "====================================================================="
-# echo "Q3.4d: Train Graph CNN and Graph Attention (TensorBoard plots)"
-# echo "====================================================================="
-# (
-#   cd part3 || exit 0
-#   # Train and log all three model variants as required in Q3.4:
-#   #   - gcn          (message-passing GCN)
-#   #   - matrix-gcn   (matrix-based GCN)
-#   #   - gat          (graph attention)
-#   for MODEL in gcn matrix-gcn gat; do
-#     echo "---- Training GraphNN with --model ${MODEL} ----"
-#     ${PYTHON_RUNNER} train.py --model "${MODEL}"
-#   done
-# )
-# if [ $? -ne 0 ]; then
-#   echo "Q3.4d training FAILED."
-# fi
+echo
+echo "====================================================================="
+echo "Q3.4d: Train Graph CNN and Graph Attention (TensorBoard plots)"
+echo "====================================================================="
+(
+  cd part3 || exit 0
+  # Train and log all three model variants as required in Q3.4:
+  #   - gcn          (message-passing GCN)
+  #   - matrix-gcn   (matrix-based GCN)
+  #   - gat          (graph attention)
+  for MODEL in gcn matrix-gcn gat; do
+    echo "---- Training GraphNN with --model ${MODEL} ----"
+    ${PYTHON_RUNNER} train.py --model "${MODEL}"
+  done
+)
+if [ $? -ne 0 ]; then
+  echo "Q3.4d training FAILED."
+fi
 
 echo
 echo "Done. Check TensorBoard logs and JSON outputs for results."
+
 
 

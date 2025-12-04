@@ -66,7 +66,7 @@ class MatrixGraphConvolution(nn.Module):
         D_inv = self.make_inverted_degree_matrix(edge_index, num_nodes)
 
         # D^{-1} A X W^T + X B^T   (same update as in Q3.3.a)
-        out = D_inv @ A @ x @ self.W.t() + x @ self.B.t()
+        out = D_inv @ A @ x @ self.W.T + x @ self.B.T
         return out
 
 class MessageGraphConvolution(nn.Module):
@@ -116,7 +116,7 @@ class MessageGraphConvolution(nn.Module):
         :return: updated values of nodes. shape: [num_nodes, num_out_features]
         """
         # linear transform of aggregated neighbor messages + skip connection through B
-        x = messages @ self.W.t() + x @ self.B.t()
+        x = messages @ self.W.T + x @ self.B.T
         return x
 
     def forward(self, x, edge_index):
@@ -146,13 +146,18 @@ class GraphAttention(nn.Module):
                  messages -> messages vector with shape [num_nodes, num_out_features], i.e. Wh from Veličković et al.
                  edge_weights_numerator -> unnormalized edge weightsm i.e. exp(e_ij) from Veličković et al.
                  softmax_denominator -> per destination softmax normalizer
+        Hint: the GAT implementation uses only 1 parameter vector and edge index with self loops
+        Hint: It is easier to use/calculate only the numerator of the softmax
+              and weight with the denominator at the end.
+
+        Hint: check out torch.Tensor.index_add function
         """
         # add self-loops as in the original GAT paper
         edge_index, _ = add_self_loops(edge_index)
         src, dst = edge_index
 
         # linear projection of node features
-        activations = x @ self.W.t()                     # [N, F_out]
+        activations = x @ self.W.T                     # [N, F_out]
         messages = activations                           # node-level messages (Wh)
 
         # gather edge-wise source/destination representations
