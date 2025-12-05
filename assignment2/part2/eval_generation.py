@@ -94,26 +94,26 @@ def coerce_generate_output(outputs: Union[str, List[str], Tuple[str, ...]]) -> s
 # ---------------------------------------------------------------------------
 
 DEFAULT_PROMPTS = [
-    "Once upon a time",
-    "The king said to",
-    "In the dark forest",
+    "There once lived a",
+    "The queen ordered her",
+    "Deep in the woods",
     "And they lived happily",
-    "The old woman gave",
+    "The golden key opened",
 ]
 
 DEFAULT_CONFIGS = [
     # Greedy baseline
     {"name": "Greedy",                "do_sample": False, "top_k": None, "top_p": None, "temperature": 1.0},
     # Top-p / nucleus
-    {"name": "Top-p (T=0.5, p=0.6)",  "do_sample": True,  "top_k": None, "top_p": 0.6,  "temperature": 0.5},
-    {"name": "Top-p (T=0.8, p=0.6)",  "do_sample": True,  "top_k": None, "top_p": 0.6,  "temperature": 0.8},
-    {"name": "Top-p (T=1.0, p=0.6)",  "do_sample": True,  "top_k": None, "top_p": 0.6,  "temperature": 1.0},
-    {"name": "Top-p (T=1.0, p=0.9)",  "do_sample": True,  "top_k": None, "top_p": 0.9,  "temperature": 1.0},
-    {"name": "Top-p (T=1.5, p=0.9)",  "do_sample": True,  "top_k": None, "top_p": 0.9,  "temperature": 1.5},
+    {"name": "Top-p (T=0.6, p=0.7)",  "do_sample": True,  "top_k": None, "top_p": 0.7,  "temperature": 0.7},
+    {"name": "Top-p (T=0.95, p=0.7)",  "do_sample": True,  "top_k": None, "top_p": 0.7,  "temperature": 0.95},
+    {"name": "Top-p (T=1.2, p=0.7)",  "do_sample": True,  "top_k": None, "top_p": 0.7,  "temperature": 1.2},
+    {"name": "Top-p (T=1.2, p=0.95)",  "do_sample": True,  "top_k": None, "top_p": 0.95,  "temperature": 1.2},
+    {"name": "Top-p (T=1.5, p=0.95)",  "do_sample": True,  "top_k": None, "top_p": 0.95,  "temperature": 1.5},
     # Top-k
-    {"name": "Top-k (T=1.0, k=5)",    "do_sample": True,  "top_k": 5,    "top_p": None, "temperature": 1.0},
-    {"name": "Top-k (T=1.0, k=20)",   "do_sample": True,  "top_k": 20,   "top_p": None, "temperature": 1.0},
-    {"name": "Top-k (T=1.0, k=50)",   "do_sample": True,  "top_k": 50,   "top_p": None, "temperature": 1.0},
+    {"name": "Top-k (T=1.2, k=5)",    "do_sample": True,  "top_k": 5,    "top_p": None, "temperature": 1.2},
+    {"name": "Top-k (T=1.2, k=30)",   "do_sample": True,  "top_k": 30,   "top_p": None, "temperature": 1.2},
+    {"name": "Top-k (T=1.2, k=100)",   "do_sample": True,  "top_k": 100,   "top_p": None, "temperature": 1.2},
 ]
 
 
