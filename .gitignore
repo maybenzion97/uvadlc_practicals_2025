@@ -1,0 +1,7 @@
+assignment2/part1/.DS_Store
+assignment2/part2/.DS_Store
+assignment2/.DS_Store
+*/_pycache_/*
+.DS_Store
+assignment2/part2/__pycache__/gpt.cpython-312.pyc
+assignment2/part3/__pycache__/graph_cnn.cpython-312.pyc
