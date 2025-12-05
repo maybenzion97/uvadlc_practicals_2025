@@ -486,9 +486,14 @@ class GPT(nn.Module):
                                 tokens, with shape (batch size, sequence length + max_new_tokens).
         """
         assert not (top_k and top_p), "You can only use one of top_k or top_p sampling"
-        for _ in range(max_new_tokens):
+        # pre-allocated output to avoid multiple allocations
+        output = torch.zeros(idx.size(0), idx.size(1) + max_new_tokens, dtype=torch.long, device=idx.device)
+        output[:, :idx.size(1)] = idx
+
+        for i in range(max_new_tokens):
+            cur_len = idx.size(1) + i
             # if the sequence context is growing too long we must crop it at block_size
-            idx_cond = idx if idx.size(1) <= self.block_size else idx[:, -self.block_size:]
+            idx_cond = output[:, :cur_len] if cur_len <= self.block_size else output[:, cur_len - self.block_size:cur_len]
 
             # forward the model to get the logits for the index in the sequence
             logits = self.forward(idx_cond)
@@ -516,9 +521,11 @@ class GPT(nn.Module):
                     sorted_probs = F.softmax(sorted_logits, dim=-1)
                     cumulative_probs = sorted_probs.cumsum(dim=-1)
 
+                    # shift cumsum to get cumsum before including each token (guarantees that the first token after the threshold is included) 
+                    cumsum_before = F.pad(cumulative_probs[..., :-1], (1, 0), value=0.0)
+
                     # Remove tokens with cumulative probability above the threshold
-                    sorted_indices_to_remove = cumulative_probs > top_p
-                    sorted_indices_to_remove[:, 0] = False  # Always keep the top token
+                    sorted_indices_to_remove = cumsum_before > top_p
 
                     # Map the removal mask back to original vocabulary order
                     indices_to_remove = sorted_indices_to_remove.scatter(
@@ -531,6 +538,7 @@ class GPT(nn.Module):
                 idx_next = torch.multinomial(probs, num_samples=1)
 
             # append sampled index to the running sequence and continue
-            idx = torch.cat([idx, idx_next], dim=1)
+            # using output instead of idx, since we need to return the entire sequence and we used pre-allocation
+            output[:, cur_len] = idx_next.squeeze(-1)
 
-        return idx
+        return output

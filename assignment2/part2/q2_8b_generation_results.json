@@ -1,0 +1,577 @@
+{
+  "metadata": {
+    "model_weights_folder": "./logs/gpt-mini/version_2/checkpoints",
+    "num_generated_tokens": 100,
+    "seed": 0,
+    "device": "cuda"
+  },
+  "prompts": [
+    "There once lived a",
+    "The queen ordered her",
+    "Deep in the woods",
+    "And they lived happily",
+    "The golden key opened"
+  ],
+  "configurations": [
+    {
+      "name": "Greedy",
+      "do_sample": false,
+      "top_k": null,
+      "top_p": null,
+      "temperature": 1.0
+    },
+    {
+      "name": "Top-p (T=0.6, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.7
+    },
+    {
+      "name": "Top-p (T=0.95, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.95
+    },
+    {
+      "name": "Top-p (T=1.2, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 1.2
+    },
+    {
+      "name": "Top-p (T=1.2, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.2
+    },
+    {
+      "name": "Top-p (T=1.5, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.5
+    },
+    {
+      "name": "Top-k (T=1.2, k=5)",
+      "do_sample": true,
+      "top_k": 5,
+      "top_p": null,
+      "temperature": 1.2
+    },
+    {
+      "name": "Top-k (T=1.2, k=30)",
+      "do_sample": true,
+      "top_k": 30,
+      "top_p": null,
+      "temperature": 1.2
+    },
+    {
+      "name": "Top-k (T=1.2, k=100)",
+      "do_sample": true,
+      "top_k": 100,
+      "top_p": null,
+      "temperature": 1.2
+    }
+  ],
+  "generations": [
+    {
+      "prompt": "There once lived a",
+      "config_name": "Greedy",
+      "do_sample": false,
+      "top_k": null,
+      "top_p": null,
+      "temperature": 1.0,
+      "full_output": "There once lived a little birds and said: ‘The wolf is coming to do it,\nand I will give you to see you for me.’ Then t",
+      "generated_only": " little birds and said: ‘The wolf is coming to do it,\nand I will give you to see you for me.’ Then t",
+      "error": null
+    },
+    {
+      "prompt": "There once lived a",
+      "config_name": "Top-p (T=0.6, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.7,
+      "full_output": "There once lived a great peril, and was very much grieved\nwhen she was so hard that they had to see him to be seen. Th",
+      "generated_only": " great peril, and was very much grieved\nwhen she was so hard that they had to see him to be seen. Th",
+      "error": null
+    },
+    {
+      "prompt": "There once lived a",
+      "config_name": "Top-p (T=0.95, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.95,
+      "full_output": "There once lived a long time, but the seventh dwarfs\nhe struck him that he would not be able to do with him, and then ",
+      "generated_only": " long time, but the seventh dwarfs\nhe struck him that he would not be able to do with him, and then ",
+      "error": null
+    },
+    {
+      "prompt": "There once lived a",
+      "config_name": "Top-p (T=1.2, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 1.2,
+      "full_output": "There once lived a piece of him and carry him\nand said, ‘Why do you wish to spare anything for me to go the beautiful\n",
+      "generated_only": " piece of him and carry him\nand said, ‘Why do you wish to spare anything for me to go the beautiful\n",
+      "error": null
+    },
+    {
+      "prompt": "There once lived a",
+      "config_name": "Top-p (T=1.2, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.2,
+      "full_output": "There once lived a princess hold of his shoulders. ‘Yes,’\nthought we will not be bigger so,’ said he, ‘but I touched h",
+      "generated_only": " princess hold of his shoulders. ‘Yes,’\nthought we will not be bigger so,’ said he, ‘but I touched h",
+      "error": null
+    },
+    {
+      "prompt": "There once lived a",
+      "config_name": "Top-p (T=1.5, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.5,
+      "full_output": "There once lived a\nstraw with time?’ She answered:\n\n ‘Blow, breezes, blessing the ball;\n  And Mer Skdty loads\n  But of",
+      "generated_only": "\nstraw with time?’ She answered:\n\n ‘Blow, breezes, blessing the ball;\n  And Mer Skdty loads\n  But of",
+      "error": null
+    },
+    {
+      "prompt": "There once lived a",
+      "config_name": "Top-k (T=1.2, k=5)",
+      "do_sample": true,
+      "top_k": 5,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "There once lived a large white food for\nhim. He said to his master. ‘What does these?’ asked the cat. ‘If you\nhad some",
+      "generated_only": " large white food for\nhim. He said to his master. ‘What does these?’ asked the cat. ‘If you\nhad some",
+      "error": null
+    },
+    {
+      "prompt": "There once lived a",
+      "config_name": "Top-k (T=1.2, k=30)",
+      "do_sample": true,
+      "top_k": 30,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "There once lived a word; and all thought:\n‘If I fear before you by someone, if I be work  hard to shudder,’\nsaid he; ‘",
+      "generated_only": " word; and all thought:\n‘If I fear before you by someone, if I be work  hard to shudder,’\nsaid he; ‘",
+      "error": null
+    },
+    {
+      "prompt": "There once lived a",
+      "config_name": "Top-k (T=1.2, k=100)",
+      "do_sample": true,
+      "top_k": 100,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "There once lived a six\ntime, and called Rose-red, ‘Carter! and we shall be able to die.’\n\n‘No,’ replied the grace, ‘th",
+      "generated_only": " six\ntime, and called Rose-red, ‘Carter! and we shall be able to die.’\n\n‘No,’ replied the grace, ‘th",
+      "error": null
+    },
+    {
+      "prompt": "The queen ordered her",
+      "config_name": "Greedy",
+      "do_sample": false,
+      "top_k": null,
+      "top_p": null,
+      "temperature": 1.0,
+      "full_output": "The queen ordered her to the gardener’s house, and said, ‘I will\ngive you the child and see what I am going to see if you",
+      "generated_only": " to the gardener’s house, and said, ‘I will\ngive you the child and see what I am going to see if you",
+      "error": null
+    },
+    {
+      "prompt": "The queen ordered her",
+      "config_name": "Top-p (T=0.6, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.7,
+      "full_output": "The queen ordered her and the second son was associated as the stable,\nand the little child was to be put into the wood. ",
+      "generated_only": " and the second son was associated as the stable,\nand the little child was to be put into the wood. ",
+      "error": null
+    },
+    {
+      "prompt": "The queen ordered her",
+      "config_name": "Top-p (T=0.95, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.95,
+      "full_output": "The queen ordered her to the second bring her beauty: ‘Oh,\nwhat have you to sit by my finger think I am myself?’ ‘Yes,’ s",
+      "generated_only": " to the second bring her beauty: ‘Oh,\nwhat have you to sit by my finger think I am myself?’ ‘Yes,’ s",
+      "error": null
+    },
+    {
+      "prompt": "The queen ordered her",
+      "config_name": "Top-p (T=1.2, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 1.2,
+      "full_output": "The queen ordered her, and ate and said: ‘Sir what has a\nlong time he can be done.’ ‘No,’ said the old woman, ‘and see if",
+      "generated_only": ", and ate and said: ‘Sir what has a\nlong time he can be done.’ ‘No,’ said the old woman, ‘and see if",
+      "error": null
+    },
+    {
+      "prompt": "The queen ordered her",
+      "config_name": "Top-p (T=1.2, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.2,
+      "full_output": "The queen ordered her, and went to\nbed, with where they recognized safe’s legs; take when she was alone after\nher hand, a",
+      "generated_only": ", and went to\nbed, with where they recognized safe’s legs; take when she was alone after\nher hand, a",
+      "error": null
+    },
+    {
+      "prompt": "The queen ordered her",
+      "config_name": "Top-p (T=1.5, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.5,
+      "full_output": "The queen ordered herself, and asked the sup\nthere amuse happy and they bareln before the carriage happiece. A\nfast as th",
+      "generated_only": "self, and asked the sup\nthere amuse happy and they bareln before the carriage happiece. A\nfast as th",
+      "error": null
+    },
+    {
+      "prompt": "The queen ordered her",
+      "config_name": "Top-k (T=1.2, k=5)",
+      "do_sample": true,
+      "top_k": 5,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "The queen ordered her two things that it was a\ncastle which with the children out, and as he stood before him; and she\nth",
+      "generated_only": " two things that it was a\ncastle which with the children out, and as he stood before him; and she\nth",
+      "error": null
+    },
+    {
+      "prompt": "The queen ordered her",
+      "config_name": "Top-k (T=1.2, k=30)",
+      "do_sample": true,
+      "top_k": 30,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "The queen ordered her again to do what\nshe was empty, and looked at the corner out, and said about his after him,\nand sta",
+      "generated_only": " again to do what\nshe was empty, and looked at the corner out, and said about his after him,\nand sta",
+      "error": null
+    },
+    {
+      "prompt": "The queen ordered her",
+      "config_name": "Top-k (T=1.2, k=100)",
+      "do_sample": true,
+      "top_k": 100,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "The queen ordered her to the cellar sweetheart\nRoland into the fare\nstatus leg;\n  Marian Rapunzel knew late her knew,\n  B",
+      "generated_only": " to the cellar sweetheart\nRoland into the fare\nstatus leg;\n  Marian Rapunzel knew late her knew,\n  B",
+      "error": null
+    },
+    {
+      "prompt": "Deep in the woods",
+      "config_name": "Greedy",
+      "do_sample": false,
+      "top_k": null,
+      "top_p": null,
+      "temperature": 1.0,
+      "full_output": "Deep in the woods and carried the castle, and the giants were so much\nthat he had been so sitting that he had been so",
+      "generated_only": " and carried the castle, and the giants were so much\nthat he had been so sitting that he had been so",
+      "error": null
+    },
+    {
+      "prompt": "Deep in the woods",
+      "config_name": "Top-p (T=0.6, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.7,
+      "full_output": "Deep in the woods; and the good carefully to her glass, and as he\ncould not see him as before. ‘Here is a good for yo",
+      "generated_only": "; and the good carefully to her glass, and as he\ncould not see him as before. ‘Here is a good for yo",
+      "error": null
+    },
+    {
+      "prompt": "Deep in the woods",
+      "config_name": "Top-p (T=0.95, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.95,
+      "full_output": "Deep in the woods; and after the other, the sausage princess, ‘I\nwill give you a charm a fine clothes, and I am sure ",
+      "generated_only": "; and after the other, the sausage princess, ‘I\nwill give you a charm a fine clothes, and I am sure ",
+      "error": null
+    },
+    {
+      "prompt": "Deep in the woods",
+      "config_name": "Top-p (T=1.2, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 1.2,
+      "full_output": "Deep in the woods, that the bird was forced to do her, and said: ‘I have\nseen the poor shabby children the second pri",
+      "generated_only": ", that the bird was forced to do her, and said: ‘I have\nseen the poor shabby children the second pri",
+      "error": null
+    },
+    {
+      "prompt": "Deep in the woods",
+      "config_name": "Top-p (T=1.2, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.2,
+      "full_output": "Deep in the woods.\n\nPresently the comfortably red sixth of them likewise. Then Hans came and\nagreed to him, but staye",
+      "generated_only": ".\n\nPresently the comfortably red sixth of them likewise. Then Hans came and\nagreed to him, but staye",
+      "error": null
+    },
+    {
+      "prompt": "Deep in the woods",
+      "config_name": "Top-p (T=1.5, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.5,
+      "full_output": "Deep in the woods of sour girl, and looks ug of fag porions, who\nwas dismission whatsoever mind, he did not dress und",
+      "generated_only": " of sour girl, and looks ug of fag porions, who\nwas dismission whatsoever mind, he did not dress und",
+      "error": null
+    },
+    {
+      "prompt": "Deep in the woods",
+      "config_name": "Top-k (T=1.2, k=5)",
+      "do_sample": true,
+      "top_k": 5,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "Deep in the woods.\n\nAnd as she went in to the kitchen, and called him ‘Mother,’ said she:\n‘why\nshould you let the fir",
+      "generated_only": ".\n\nAnd as she went in to the kitchen, and called him ‘Mother,’ said she:\n‘why\nshould you let the fir",
+      "error": null
+    },
+    {
+      "prompt": "Deep in the woods",
+      "config_name": "Top-k (T=1.2, k=30)",
+      "do_sample": true,
+      "top_k": 30,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "Deep in the woods. And then she made two pricess,\nhowever, that she heard a peasant and chook for the children, and s",
+      "generated_only": ". And then she made two pricess,\nhowever, that she heard a peasant and chook for the children, and s",
+      "error": null
+    },
+    {
+      "prompt": "Deep in the woods",
+      "config_name": "Top-k (T=1.2, k=100)",
+      "do_sample": true,
+      "top_k": 100,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "Deep in the woods; we must back after her many\npeep, but are still livesiants with the braids, but Mademan refused by",
+      "generated_only": "; we must back after her many\npeep, but are still livesiants with the braids, but Mademan refused by",
+      "error": null
+    },
+    {
+      "prompt": "And they lived happily",
+      "config_name": "Greedy",
+      "do_sample": false,
+      "top_k": null,
+      "top_p": null,
+      "temperature": 1.0,
+      "full_output": "And they lived happily together into the wood, and the little\npiece of bread with the same time the stars: ‘What a clever ",
+      "generated_only": " together into the wood, and the little\npiece of bread with the same time the stars: ‘What a clever ",
+      "error": null
+    },
+    {
+      "prompt": "And they lived happily",
+      "config_name": "Top-p (T=0.6, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.7,
+      "full_output": "And they lived happily together a great wood to the castle, and\nthe cow was called Roland, and the fisherman went out toge",
+      "generated_only": " together a great wood to the castle, and\nthe cow was called Roland, and the fisherman went out toge",
+      "error": null
+    },
+    {
+      "prompt": "And they lived happily",
+      "config_name": "Top-p (T=0.95, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.95,
+      "full_output": "And they lived happily together and brought it to the shoe, and\nsaid, ‘I should like to be sure to do with the golden bird",
+      "generated_only": " together and brought it to the shoe, and\nsaid, ‘I should like to be sure to do with the golden bird",
+      "error": null
+    },
+    {
+      "prompt": "And they lived happily",
+      "config_name": "Top-p (T=1.2, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 1.2,
+      "full_output": "And they lived happily together into the garden, and the\ncountryman promised not to give him the chance of his father’s ho",
+      "generated_only": " together into the garden, and the\ncountryman promised not to give him the chance of his father’s ho",
+      "error": null
+    },
+    {
+      "prompt": "And they lived happily",
+      "config_name": "Top-p (T=1.2, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.2,
+      "full_output": "And they lived happily with her\neyes open it, and then he answered: ‘Oh, you shudder! it shall have\na great such a cat? Yo",
+      "generated_only": " with her\neyes open it, and then he answered: ‘Oh, you shudder! it shall have\na great such a cat? Yo",
+      "error": null
+    },
+    {
+      "prompt": "And they lived happily",
+      "config_name": "Top-p (T=1.5, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.5,
+      "full_output": "And they lived happily all three days. And soon easily let the fairy\ncarter, the guest chair in the golden castle, sat her",
+      "generated_only": " all three days. And soon easily let the fairy\ncarter, the guest chair in the golden castle, sat her",
+      "error": null
+    },
+    {
+      "prompt": "And they lived happily",
+      "config_name": "Top-k (T=1.2, k=5)",
+      "do_sample": true,
+      "top_k": 5,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "And they lived happily together very house and\nwhat had saved was the soot. The stone\ntill the love of all daybreak, and h",
+      "generated_only": " together very house and\nwhat had saved was the soot. The stone\ntill the love of all daybreak, and h",
+      "error": null
+    },
+    {
+      "prompt": "And they lived happily",
+      "config_name": "Top-k (T=1.2, k=30)",
+      "do_sample": true,
+      "top_k": 30,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "And they lived happily together; and\ntherefore and the moller is as much drove his bride; behind the four\nflowers riding o",
+      "generated_only": " together; and\ntherefore and the moller is as much drove his bride; behind the four\nflowers riding o",
+      "error": null
+    },
+    {
+      "prompt": "And they lived happily",
+      "config_name": "Top-k (T=1.2, k=100)",
+      "do_sample": true,
+      "top_k": 100,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "And they lived happily, and\ncannot fly from the two children would not hold him every morning her\nrest, and next morning t",
+      "generated_only": ", and\ncannot fly from the two children would not hold him every morning her\nrest, and next morning t",
+      "error": null
+    },
+    {
+      "prompt": "The golden key opened",
+      "config_name": "Greedy",
+      "do_sample": false,
+      "top_k": null,
+      "top_p": null,
+      "temperature": 1.0,
+      "full_output": "The golden key opened the door, and the soldier was so beautiful\nthat he had been so sitting that he was to be seen and s",
+      "generated_only": " the door, and the soldier was so beautiful\nthat he had been so sitting that he was to be seen and s",
+      "error": null
+    },
+    {
+      "prompt": "The golden key opened",
+      "config_name": "Top-p (T=0.6, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.7,
+      "full_output": "The golden key opened the door, and the tailor was to be king.\nThe man went away together, and said: ‘The old woman had s",
+      "generated_only": " the door, and the tailor was to be king.\nThe man went away together, and said: ‘The old woman had s",
+      "error": null
+    },
+    {
+      "prompt": "The golden key opened",
+      "config_name": "Top-p (T=0.95, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 0.95,
+      "full_output": "The golden key opened the door, but as they were all asleep,\nand asked her why she saw that he had said to himself, ‘If I",
+      "generated_only": " the door, but as they were all asleep,\nand asked her why she saw that he had said to himself, ‘If I",
+      "error": null
+    },
+    {
+      "prompt": "The golden key opened",
+      "config_name": "Top-p (T=1.2, p=0.7)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.7,
+      "temperature": 1.2,
+      "full_output": "The golden key opened the door of the town, and as they stood before\nhim. The boat placed him on a good grinder, but said",
+      "generated_only": " the door of the town, and as they stood before\nhim. The boat placed him on a good grinder, but said",
+      "error": null
+    },
+    {
+      "prompt": "The golden key opened",
+      "config_name": "Top-p (T=1.2, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.2,
+      "full_output": "The golden key opened\nhis little dwarf was quite such a terrible of need castle. But the giant\nrespect had said: ‘The kin",
+      "generated_only": "\nhis little dwarf was quite such a terrible of need castle. But the giant\nrespect had said: ‘The kin",
+      "error": null
+    },
+    {
+      "prompt": "The golden key opened",
+      "config_name": "Top-p (T=1.5, p=0.95)",
+      "do_sample": true,
+      "top_k": null,
+      "top_p": 0.95,
+      "temperature": 1.5,
+      "full_output": "The golden key opened his\ntongue; and the took rrised him, but was carried in the morning before\nthe end of no farmers, o",
+      "generated_only": " his\ntongue; and the took rrised him, but was carried in the morning before\nthe end of no farmers, o",
+      "error": null
+    },
+    {
+      "prompt": "The golden key opened",
+      "config_name": "Top-k (T=1.2, k=5)",
+      "do_sample": true,
+      "top_k": 5,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "The golden key opened the church, and threw hot\nonce more give up his house, and thought to herself, which he had forced\n",
+      "generated_only": " the church, and threw hot\nonce more give up his house, and thought to herself, which he had forced\n",
+      "error": null
+    },
+    {
+      "prompt": "The golden key opened",
+      "config_name": "Top-k (T=1.2, k=30)",
+      "do_sample": true,
+      "top_k": 30,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "The golden key opened\nhis form to cut out, and tied his praylical her might: ‘This yellow\nbuttons, we fear at last the ta",
+      "generated_only": "\nhis form to cut out, and tied his praylical her might: ‘This yellow\nbuttons, we fear at last the ta",
+      "error": null
+    },
+    {
+      "prompt": "The golden key opened",
+      "config_name": "Top-k (T=1.2, k=100)",
+      "do_sample": true,
+      "top_k": 100,
+      "top_p": null,
+      "temperature": 1.2,
+      "full_output": "The golden key opened.\n\nWhen the king does were only eight with tts dougs, which has thriven\nchild. ‘He has been given me",
+      "generated_only": ".\n\nWhen the king does were only eight with tts dougs, which has thriven\nchild. ‘He has been given me",
+      "error": null
+    }
+  ]
+}
