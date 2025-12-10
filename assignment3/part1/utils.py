@@ -84,7 +84,7 @@ def elbo_to_bpd(elbo, img_shape):
     #######################
     dims = img_shape[1:]  # [channels, height, width]
     product_dims = torch.prod(torch.tensor(dims, dtype=torch.float32))
-    log2_e = torch.log2(torch.e)
+    log2_e = torch.log2(torch.tensor(torch.e))
     # Compute bits per dimension- Formula: bpd = nll · log₂(e) · (∏ᵢ dᵢ)⁻¹
     bpd = elbo * log2_e / product_dims
     #######################

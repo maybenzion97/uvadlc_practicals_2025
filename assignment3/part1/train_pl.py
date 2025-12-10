@@ -76,11 +76,13 @@ class VAE(pl.LightningModule):
         # Sample from latent space
         z = sample_reparameterize(mean, std)
         # Decode latent space to images
-        x_reconstructed = self.decoder(z)
-        # Calculate reconstruction loss
-        L_rec = F.cross_entropy(x_reconstructed, imgs, reduction='mean')
+        x_reconstructed = self.decoder(z)  # Shape: [B, 16, H, W]
+        
+        # Calculate reconstruction loss (sum over spatial dims, average over batch)
+        L_rec = F.cross_entropy(x_reconstructed, imgs[:,0], reduction='none')  # [B, H, W]
+        L_rec = L_rec.sum(dim=[1, 2]).mean()  # Sum over H,W -> [B], then mean over batch -> scalar
         # Calculate regularization loss
-        L_reg = KLD(mean, log_std)
+        L_reg = KLD(mean, log_std).mean()
         # Calculate bits per dimension
         elbo = L_rec + L_reg
         bpd = elbo_to_bpd(elbo, imgs.shape)
