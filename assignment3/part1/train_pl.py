@@ -70,10 +70,20 @@ class VAE(pl.LightningModule):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        L_rec = None
-        L_reg = None
-        bpd = None
-        raise NotImplementedError
+        # Encode images to latent space
+        mean, log_std = self.encoder(imgs)
+        std = log_std.exp()
+        # Sample from latent space
+        z = sample_reparameterize(mean, std)
+        # Decode latent space to images
+        x_reconstructed = self.decoder(z)
+        # Calculate reconstruction loss
+        L_rec = F.cross_entropy(x_reconstructed, imgs, reduction='mean')
+        # Calculate regularization loss
+        L_reg = KLD(mean, log_std)
+        # Calculate bits per dimension
+        elbo = L_rec + L_reg
+        bpd = elbo_to_bpd(elbo, imgs.shape)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -91,8 +101,21 @@ class VAE(pl.LightningModule):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        x_samples = None
-        raise NotImplementedError
+        # Sample z from prior (standard normal distribution)
+        z = torch.randn(batch_size, self.hparams.z_dim, device=self.device)
+        
+        # Decode z to get logits
+        logits = self.decoder(z)  # Shape: [B, 16, 28, 28]
+        
+        # Apply softmax to get probabilities and sample from categorical distribution
+        probs = F.softmax(logits, dim=1)  # Shape: [B, 16, 28, 28]
+        
+        # Sample from categorical distribution for each pixel
+        # Reshape to [B*28*28, 16] for sampling, then reshape back
+        B, C, H, W = probs.shape
+        probs_flat = probs.permute(0, 2, 3, 1).reshape(-1, C)  # [B*H*W, 16]
+        x_samples_flat = torch.multinomial(probs_flat, num_samples=1).squeeze(-1)  # [B*H*W]
+        x_samples = x_samples_flat.reshape(B, 1, H, W)  # [B, 1, H, W]
         #######################
         # END OF YOUR CODE    #
         #######################

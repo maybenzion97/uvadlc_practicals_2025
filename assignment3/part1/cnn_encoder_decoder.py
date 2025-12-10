@@ -38,7 +38,27 @@ class CNNEncoder(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        raise NotImplementedError
+        c_hid = num_filters
+        act_fn = nn.GELU
+        
+        # CNN layers: 28x28 => 14x14 => 7x7 => 4x4
+        self.net = nn.Sequential(
+            nn.Conv2d(num_input_channels, c_hid, kernel_size=3, padding=1, stride=2),  # 28x28 => 14x14
+            act_fn(),
+            nn.Conv2d(c_hid, c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.Conv2d(c_hid, 2*c_hid, kernel_size=3, padding=1, stride=2),  # 14x14 => 7x7
+            act_fn(),
+            nn.Conv2d(2*c_hid, 2*c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.Conv2d(2*c_hid, 2*c_hid, kernel_size=3, padding=1, stride=2),  # 7x7 => 4x4
+            act_fn(),
+            nn.Flatten(),  # flattening: 2*c_hid * 4 * 4 = 32*c_hid
+        )
+        
+        # Separate linear layers for mean and log_std
+        self.linear_mean = nn.Linear(32*c_hid, z_dim)
+        self.linear_log_std = nn.Linear(32*c_hid, z_dim)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -56,9 +76,12 @@ class CNNEncoder(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        mean = None
-        log_std = None
-        raise NotImplementedError
+        # Pass through CNN to get feature vector
+        features = self.net(x)  # Shape: [B, 32*c_hid]
+        
+        # Get mean and log_std from separate linear layers
+        mean = self.linear_mean(features)  # Shape: [B, z_dim]
+        log_std = self.linear_log_std(features)  # Shape: [B, z_dim]
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -84,7 +107,28 @@ class CNNDecoder(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        raise NotImplementedError
+        c_hid = num_filters
+        self.c_hid = c_hid  # Store for use in forward
+        act_fn = nn.GELU
+        
+        # Linear layer to project latent vector to feature map size
+        self.linear = nn.Sequential(
+            nn.Linear(z_dim, 32*c_hid),
+            act_fn()
+        )
+        
+        # Transpose convolutions to upsample: 4x4 => 7x7 => 14x14 => 28x28
+        self.net = nn.Sequential(
+            nn.ConvTranspose2d(2*c_hid, 2*c_hid, kernel_size=3, output_padding=0, padding=1, stride=2),  # 4x4 => 7x7
+            act_fn(),
+            nn.Conv2d(2*c_hid, 2*c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.ConvTranspose2d(2*c_hid, c_hid, kernel_size=3, output_padding=1, padding=1, stride=2),  # 7x7 => 14x14
+            act_fn(),
+            nn.Conv2d(c_hid, c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.ConvTranspose2d(c_hid, num_input_channels, kernel_size=3, output_padding=1, padding=1, stride=2),  # 14x14 => 28x28
+        )
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -102,8 +146,15 @@ class CNNDecoder(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        x = None
-        raise NotImplementedError
+        # Project latent vector to feature map size
+        x = self.linear(z)  # Shape: [B, 32*c_hid]
+        
+        # Reshape to feature map: (batch, channels, height, width)
+        # 32*c_hid = 2*c_hid * 4 * 4
+        x = x.reshape(x.shape[0], 2*self.c_hid, 4, 4)
+        
+        # Pass through transpose convolutions
+        x = self.net(x)  # Shape: [B, num_input_channels, 28, 28]
         #######################
         # END OF YOUR CODE    #
         #######################

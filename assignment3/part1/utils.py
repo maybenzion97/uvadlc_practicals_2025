@@ -35,8 +35,10 @@ def sample_reparameterize(mean, std):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-    z = None
-    raise NotImplementedError
+    # Sample epsilon from standard normal distribution N(0, 1)
+    epsilon = torch.randn_like(mean)
+    # Apply reparameterization trick: z = std * epsilon + mean
+    z = std * epsilon + mean
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -58,8 +60,10 @@ def KLD(mean, log_std):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-    KLD = None
-    raise NotImplementedError
+    # KL divergence formula: 0.5 * Σ_d [exp(2 log σ) + μ² - 1 - 2 log σ]
+    # incorprating the funtionsw params yields: 0.5 * Σ_d [exp(2 * log_std) + mean² - 1 - 2 * log_std]
+    two_log_std = 2 * log_std
+    KLD = 0.5 * torch.sum(torch.exp(two_log_std) + mean.pow(2) - 1 - two_log_std, dim=-1)
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -78,8 +82,11 @@ def elbo_to_bpd(elbo, img_shape):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-    bpd = None
-    raise NotImplementedError
+    dims = img_shape[1:]  # [channels, height, width]
+    product_dims = torch.prod(torch.tensor(dims, dtype=torch.float32))
+    log2_e = torch.log2(torch.e)
+    # Compute bits per dimension- Formula: bpd = nll · log₂(e) · (∏ᵢ dᵢ)⁻¹
+    bpd = elbo * log2_e / product_dims
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -110,8 +117,81 @@ def visualize_manifold(decoder, grid_size=20):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-    img_grid = None
-    raise NotImplementedError
+    # Get device from decoder
+    device = decoder.device
+    
+    # Infer z_dim from decoder by checking the first linear layer's input features
+    z_dim = None
+    for name, module in decoder.named_modules():
+        if isinstance(module, torch.nn.Linear):
+            z_dim = module.in_features
+            break
+    
+    # If not found, try to infer from first parameter shape
+    if z_dim is None:
+        for name, param in decoder.named_parameters():
+            if len(param.shape) == 2:
+                z_dim = param.shape[1]
+                break
+    
+    # Fallback: try a dummy forward pass
+    if z_dim is None:
+        for test_dim in [2, 10, 20, 32, 64]:
+            try:
+                dummy_z = torch.randn(1, test_dim, device=device)
+                with torch.no_grad():
+                    _ = decoder(dummy_z)
+                z_dim = test_dim
+                break
+            except:
+                continue
+    
+    if z_dim is None:
+        raise ValueError("Could not infer z_dim from decoder")
+    
+    # Create percentiles: [0.5/grid_size, 1.5/grid_size, ..., (grid_size-0.5)/grid_size]
+    percentiles = torch.linspace(0.5 / grid_size, (grid_size - 0.5) / grid_size, grid_size, device=device)
+    
+    # Use icdf of standard normal distribution to convert percentiles to z values
+    normal_dist = torch.distributions.Normal(0, 1)
+    z_values = normal_dist.icdf(percentiles)
+    
+    # Create meshgrid for 2D latent space
+    z1, z2 = torch.meshgrid(z_values, z_values, indexing='ij')
+    
+    # Flatten the grid to create batch of z vectors
+    z1_flat = z1.flatten()  # Shape: [grid_size**2]
+    z2_flat = z2.flatten()   # Shape: [grid_size**2]
+    
+    # Create z vectors: first 2 dims from meshgrid, rest set to 0
+    z_batch = torch.zeros(grid_size**2, z_dim, device=device)
+    z_batch[:, 0] = z1_flat
+    z_batch[:, 1] = z2_flat
+    
+    # Pass through decoder
+    decoder.eval()
+    with torch.no_grad():
+        logits = decoder(z_batch)  # Shape: [grid_size**2, num_channels, H, W]
+    
+    # Apply softmax to get probabilities because decoder outputs logits
+    probs = torch.softmax(logits, dim=1)  # Shape: [grid_size**2, num_channels, H, W]
+    
+    # Convert to expected format for make_grid
+    # The images should represent decoder's output means (not binarized samples)
+    # For 4-bit images, we have 16 channels representing values 0-15
+    # Compute expected value (mean) as weighted sum: Σ (class_value * probability)
+    if probs.shape[1] > 1:
+        # Create class values tensor: [0, 1, 2, ..., 15]
+        class_values = torch.arange(probs.shape[1], dtype=torch.float32, device=device).view(1, -1, 1, 1)
+        # Compute expected value: weighted sum of class values by their probabilities
+        img_values = (probs * class_values).sum(dim=1) / 15.0  # Shape: [grid_size**2, H, W], normalized to [0, 1]
+        # Add channel dimension
+        images = img_values.unsqueeze(1)  # Shape: [grid_size**2, 1, H, W]
+    else:
+        images = probs
+    
+    # Use make_grid to combine images into a grid
+    img_grid = make_grid(images, nrow=grid_size, normalize=True, value_range=(0, 1), pad_value=0.5)
     #######################
     # END OF YOUR CODE    #
     #######################
