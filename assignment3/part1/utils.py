@@ -36,7 +36,7 @@ def sample_reparameterize(mean, std):
     # PUT YOUR CODE HERE  #
     #######################
     # Sample epsilon from standard normal distribution N(0, 1)
-    epsilon = torch.randn_like(mean)
+    epsilon = torch.randn_like(mean, device=mean.device)
     # Apply reparameterization trick: z = std * epsilon + mean
     z = std * epsilon + mean
     #######################
