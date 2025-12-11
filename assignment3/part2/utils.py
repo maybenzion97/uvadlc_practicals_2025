@@ -106,11 +106,11 @@ def train(model, trainloader, validloader, num_epochs=25, defense_strategy = STA
                         # Add them to the original batch
                         combined_inputs = torch.cat([inputs, adv_inputs], dim=0)
                         # Make sure the model has the correct labels (duplicate labels)
-                        combined_labels = torch.cat([labels, labels], dim=0)
+                        labels = torch.cat([labels, labels], dim=0)
                         
                         optimizer.zero_grad()
                         outputs = model(combined_inputs)
-                        loss = criterion(outputs, combined_labels)
+                        loss = criterion(outputs, labels)
                         _, preds = torch.max(outputs, 1)
 
                     if phase == 'train':
