@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+#
+# It relies on the Conda environment specified in:
+#   assignment2/part3/dl2025_gpu.yml
+# with environment name: dl2025
+
+#SBATCH --partition=gpu_a100
+#SBATCH --gpus=1
+#SBATCH --job-name=DL1_A2_Q2_Q3
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=9
+#SBATCH --time=04:00:00
+#SBATCH --output=slurm_output_a3_part2_%A.out
+
+module purge
+module load 2025
+module load Anaconda3/2025.06-1
+
+# Go to the repository root (adjust if your repo is elsewhere)
+cd "$HOME/uvadlc_practicals_2025" || exit 1
+
+# Activate the dl2025 environment (created from dl2025_gpu.yml)
+source activate dl2025
+
+echo "Python version in env:"
+python --version
+# Q2.1 - fgsm attack
+srun python assignment3/part2/train.py --pretrained --train_strats standard --visualise
+# Effect of augmentation (Q2.1 hint)
+srun python assignment3/part2/train.py --train_strats standard --num_epochs 30  # without augmentation
+srun python assignment3/part2/train.py --train_strats standard --augmentations --num_epochs 30  # with augmentation
+
+
+# Q 2.2 - fgsm defence
+ # With fgsm defense (train with adversarial loss)
+srun python assignment3/part2/train.py --train_strats fgsm --num_epochs 30
+
+# (Optional hint) With fgsm defense + pretraining + augmentation
+srun python assignment3/part2/train.py --pretrained --augmentations --train_strats fgsm --num_epochs 30
+
+# Both trained from scratch, same epochs - fair comparison
+srun python assignment3/part2/train.py --train_strats standard --num_epochs 30  # baseline (you have this)
+srun python assignment3/part2/train.py --train_strats fgsm --num_epochs 30      # with defense (you have this)
+
+
+# Q2.3 - pgd attack & defence
+# 1. pgd defense training
+srun python assignment3/part2/train.py --train_strats pgd --num_epochs 30
+
+# 2. (Optional) With pretraining and augmentation
+srun python assignment3/part2/train.py --pretrained --augmentations --train_strats pgd --num_epochs 30
+
+# 3. Test crossover (fgsm defense vs pgd attack and vice versa)
+srun python assignment3/part2/train.py --pretrained --augmentations --train_strats fgsm pgd --test_crossover_defense
